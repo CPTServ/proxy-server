@@ -66,8 +66,8 @@ s.connect((HOST, PORT))
 s.send(b)
 while 1:
     msg = s.recv(1024)
-    if msg.decode():
-        print(msg.decode())
+    if msg:
+        print(msg)
         break
     time.sleep(1)
 s.close()
