@@ -13,27 +13,31 @@ import (
 // address with connection
 type Addrs struct {
 	Conn   *normal.Conn
-	Data   []byte
 	Origin string
+	Data   []byte
 }
 
 // both server and client conn&addr&key&context
 type ConnInfo struct {
-	Server Addrs
-	Client Addrs
-	Cond   sync.Cond
-	Key    string
 	Ctx    context.Context
 	Cancel context.CancelFunc
+	Cond   sync.Cond
+	Key    string
+	Server Addrs
+	Client Addrs
 }
 
 // connection types
-var TYPE_CLIENT uint8 = 1
-var TYPE_SERVER uint8 = 2
+var (
+	TYPE_CLIENT uint8 = 1
+	TYPE_SERVER uint8 = 2
+)
 
 // global session
-var SESSION_MAP map[string]*ConnInfo
-var MAP_COND sync.Cond
+var (
+	SESSION_MAP map[string]*ConnInfo
+	MAP_COND    sync.Cond
+)
 
 func init() {
 	SESSION_MAP = make(map[string]*ConnInfo)
