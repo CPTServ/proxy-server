@@ -18,6 +18,7 @@ func main() {
 	server.AddTypeCallback("server", InitServer)
 	log.Info("Callback added")
 
+	go ClearServer()
 	if err := server.Serv(); err != nil {
 		panic(err)
 	}
