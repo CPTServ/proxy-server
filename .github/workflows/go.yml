@@ -1,0 +1,88 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+      CGO_ENABLED: 0
+      GOARCH: amd64
+      GOOS: linux
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: "check env"
+        run: |
+          mkdir build
+          go env
+          ls ..
+
+      - name: "[linux] Build and Compress executable"
+        run: |
+          go build -ldflags "-s -w" -v -o ./build/PServ
+
+      - name: "[linux] Compress executable"
+        run: |
+          curl -L  https://github.com/upx/upx/releases/download/v4.1.0/upx-4.1.0-amd64_linux.tar.xz -o upx.tar.xz
+          tar -xvf upx.tar.xz
+          ./upx-4.1.0-amd64_linux/upx -9 ./build/PServ -o ./build/PServ_upx
+
+      - name: "[linux] Uplaod artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: pserv-linux64
+          path: |
+            ./build/PServ
+            ./build/PServ_upx
+
+  windows:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+      CGO_ENABLED: 0
+      GOARCH: amd64
+      GOOS: windows
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: "check env"
+        run: |
+          mkdir build
+          go env
+          ls ..
+
+      - name: "[windows] Build and Compress executable"
+        run: |
+          go build -ldflags "-s -w" -v -o ./build/PServ.exe
+
+      - name: "[windows] Compress executable"
+        run: |
+          curl -L  https://github.com/upx/upx/releases/download/v4.1.0/upx-4.1.0-amd64_linux.tar.xz -o upx.tar.xz
+          tar -xvf upx.tar.xz
+          ./upx-4.1.0-amd64_linux/upx -9 ./build/PServ.exe -o ./build/PServ_upx.exe
+
+      - name: "[windows] Uplaod artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: pserv-windows64
+          path: |
+            ./build/PServ.exe
+            ./build/PServ_upx.exe
