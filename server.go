@@ -7,23 +7,34 @@ import (
 )
 
 func InitServer(conn *normal.Conn) error {
+	defer conn.Close()
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error("[Server]%+v", err)
+		}
+	}()
 	key, err := conn.Si.GetSec()
 	if err != nil {
-		return DealError(err, conn)
+		panic(err)
 	}
 	strkey := string(key)
-	log.Info(nil, "(Server)Get key: %s", strkey)
+	log.Info("[Server]Get key: %s", strkey)
 	data, err := conn.Si.GetSec()
 	if err != nil {
-		return DealError(err, conn)
+		panic(err)
 	}
-	log.Debug(nil, "(Server)Get data: %s", string(data))
-	log.Info(nil, "(Server)Start Processing")
-	err = Process(conn, strkey, data, TYPE_SERVER)
+	log.Debug("[Server]Get data: %s", string(data))
+	log.Debug("[Server]Start Processing")
+	SetServer(string(key), string(data))
+	// err = Process(conn, strkey, data, TYPE_SERVER)
+	// if err != nil {
+	// 	log.Info("[Server]Process done with error: %v", err)
+	// 	return err
+	// }
+	_, err = conn.Raw.Write([]byte{200})
 	if err != nil {
-		log.Info(nil, "(Server)Process done with error: %v", err)
-		return err
+		panic(err)
 	}
-	log.Info(nil, "(Server)Process done")
+	log.Debug("[Server]Process done")
 	return nil
 }

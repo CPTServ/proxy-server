@@ -1,5 +1,0 @@
-server:
-  addr: ":15001"
-
-proxy_server:
-  addr: ""

@@ -1,49 +1,26 @@
 package config
 
 import (
+	"flag"
 	"fmt"
-	"os"
 )
 
 type Config struct {
-	Addr string `yaml:"addr"`
+	Address string
+	Debug   bool
 }
 
-var GLOBAL_CONFIG *Config = &Config{
-	Addr: ":15002",
-}
-
-// var CONFIG_FILE_PATH string = "/transfer-go/base_server.yml"
-
-func get_path_with_args() (string, bool) {
-	args := os.Args
-	for index, arg := range args {
-		if arg == "-c" {
-			if len(args) <= index+1 {
-				panic(fmt.Sprintln("No path provided for -c"))
-			} else {
-				return args[index+1], true
-			}
-		}
-	}
-	return "", false
+var GlobalConfig Config = Config{
+	Debug:   false,
+	Address: ":15003",
 }
 
 func init() {
-	// path, ok := get_path_with_args()
-	// if !ok {
-	// 	defalut_path, err := os.UserConfigDir()
-	// 	if err != nil {
-	// 		panic(fmt.Sprintf("Config directory not found: %s", err.Error()))
-	// 	}
-	// 	path = defalut_path + CONFIG_FILE_PATH
-	// }
-	// b, err := os.ReadFile(path)
-	// if err != nil {
-	// 	panic(fmt.Sprintf("Config file fail to read: %s", err.Error()))
-	// }
-	// err = yaml.Unmarshal(b, GLOBAL_CONFIG)
-	// if err != nil {
-	// 	panic("Config fail to load")
-	// }
+	debug := flag.Bool("debug", false, "start with debug logging")
+	host := flag.String("h", "", "listen host, default empty string")
+	port := flag.String("p", "15003", "listen port, default 15003")
+	flag.Parse()
+	fmt.Println("Flag parsed: ", *debug, *host, *port)
+	GlobalConfig.Address = (*host + ":" + *port)
+	GlobalConfig.Debug = *debug
 }
