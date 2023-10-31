@@ -1,0 +1,11 @@
+[Unit]
+Description=Proxy server for ip address transfer
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ogios/app/pserv
+ExecStart=/home/ogios/app/pserv/startup.sh
+
+[Install]
+WantedBy=multi-user.target
